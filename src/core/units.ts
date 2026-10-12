@@ -16,6 +16,10 @@ export function fromKg(kg: number, unit: WeightUnit): number {
   return unit === 'kg' ? kg : kgToLb(kg);
 }
 
+/** Per-bodyweight ratios (e.g. protein): g/lb ↔ g/kg. */
+export const gPerLbToGPerKg = (gPerLb: number): number => gPerLb / KG_PER_LB;
+export const gPerKgToGPerLb = (gPerKg: number): number => gPerKg * KG_PER_LB;
+
 export function ftInToCm(feet: number, inches: number): number {
   return (feet * 12 + inches) * CM_PER_IN;
 }

@@ -1,5 +1,5 @@
 import { computeTrend } from '../trend';
-import { cmToFtIn, formatRate, formatWeight, fromKg, ftInToCm, kgToLb, lbToKg, toKg } from '../units';
+import { cmToFtIn, formatRate, formatWeight, fromKg, ftInToCm, gPerKgToGPerLb, gPerLbToGPerKg, kgToLb, lbToKg, toKg } from '../units';
 import type { WeightEntry } from '../types';
 
 describe('units', () => {
@@ -15,6 +15,11 @@ describe('units', () => {
       expect(fromKg(toKg(lb, 'lb'), 'lb')).toBeCloseTo(lb, 10);
     }
     expect(toKg(80, 'kg')).toBe(80);
+  });
+
+  it('converts per-bodyweight ratios (protein g/lb ↔ g/kg)', () => {
+    expect(gPerLbToGPerKg(1)).toBeCloseTo(2.2046, 4);
+    expect(gPerKgToGPerLb(gPerLbToGPerKg(0.8))).toBeCloseTo(0.8, 10);
   });
 
   it('converts height', () => {

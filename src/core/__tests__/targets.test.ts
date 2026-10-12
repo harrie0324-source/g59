@@ -1,4 +1,5 @@
-import { computeMacros, computeTargets, dailyEnergyDelta, withExerciseCredit } from '../targets';
+import { computeMacros, computeTargets, dailyEnergyDelta, DEFAULT_PROTEIN_G_PER_KG, withExerciseCredit } from '../targets';
+import { kgToLb } from '../units';
 import { makeProfile } from '../__fixtures__/builders';
 
 const profile = makeProfile();
@@ -18,14 +19,15 @@ describe('computeTargets', () => {
     expect(t.reasons).toEqual([]);
   });
 
-  it('macros: protein 1.8 g/kg, fat ≥ 0.6 g/kg (or 25 % kcal), carbs = remainder', () => {
+  it('macros: protein 1 g/lb by default, fat ≥ 0.6 g/kg (or 25 % kcal), carbs = remainder', () => {
     const t = computeTargets({ tdee: 2600, goal: { type: 'maintain', rateKgPerWeek: 0 }, weightKg: 80, profile });
-    expect(t.proteinG).toBe(144);
+    expect(t.proteinG).toBe(Math.round(kgToLb(80))); // 176 g for 176 lb
     expect(t.fatG).toBe(Math.round((0.25 * 2600) / 9));
     expect(4 * t.proteinG + 9 * t.fatG + 4 * t.carbsG).toBeCloseTo(t.calories, -1);
   });
 
-  it('protein setting is clamped to 1.6–2.2 g/kg', () => {
+  it('protein setting is clamped between 1.6 g/kg and 1 g/lb', () => {
+    expect(DEFAULT_PROTEIN_G_PER_KG).toBeCloseTo(2.2046, 4);
     expect(computeMacros(2500, 80, 3, 0.6).proteinG).toBe(176);
     expect(computeMacros(2500, 80, 1, 0.6).proteinG).toBe(128);
   });
@@ -77,7 +79,7 @@ describe('computeTargets', () => {
       tdee: 1300,
       goal: { type: 'lose', rateKgPerWeek: 0.5 },
       weightKg: 120,
-      profile: makeProfile({ formulaSex: 'female', proteinGPerKg: 2.2 }),
+      profile: makeProfile({ formulaSex: 'female', proteinGPerKg: DEFAULT_PROTEIN_G_PER_KG }),
     });
     expect(t.calories).toBe(1200);
     expect(t.fatG).toBe(72); // 0.6 × 120

@@ -1,8 +1,12 @@
 import { calorieFloor, clampRate } from './safety';
+import { gPerLbToGPerKg } from './units';
 import type { GoalType, Profile } from './types';
 
 export const KCAL_PER_KG = 7700;
-export const PROTEIN_G_PER_KG_RANGE = [1.6, 2.2] as const;
+/** Default protein: 1 g per lb of bodyweight (≈ 2.2 g/kg). */
+export const DEFAULT_PROTEIN_G_PER_KG = gPerLbToGPerKg(1);
+/** Adjustable from 1.6 g/kg up to 1 g/lb. */
+export const PROTEIN_G_PER_KG_RANGE = [1.6, DEFAULT_PROTEIN_G_PER_KG] as const;
 /** Default fat: the larger of the per-kg minimum and 25 % of calories. */
 export const DEFAULT_FAT_SHARE = 0.25;
 

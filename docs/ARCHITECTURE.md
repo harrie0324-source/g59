@@ -116,7 +116,7 @@ burnrate/
 **users** — Supabase `auth.users` (managed). No custom users table.
 
 **profiles** (one row; id = deterministic `profile`)
-`formula_sex` (male|female|average), `birth_date`, `height_cm`, `activity_level` (sedentary|light|moderate|very|extra), `weight_unit` (kg|lb), `height_unit` (cm|ftin), `calorie_mode` (adaptive|daily_adjust), `exercise_credit` (0–1, default 0.5), `protein_g_per_kg` (1.6–2.2, default 1.8), `fat_min_g_per_kg` (default 0.6), `ema_alpha` (default 0.1), `checkin_weekday` (0–6, default 1 = Monday), `hide_calories`, `hide_weight`, `pregnancy_status` (none|pregnant|breastfeeding), `disclaimer_accepted_at`, `evening_reminder` (HH:MM, nullable), `timezone`.
+`formula_sex` (male|female|average), `birth_date`, `height_cm`, `activity_level` (sedentary|light|moderate|very|extra), `weight_unit` (kg|lb), `height_unit` (cm|ftin), `calorie_mode` (adaptive|daily_adjust), `exercise_credit` (0–1, default 0.5), `protein_g_per_kg` (1.6 g/kg – 1 g/lb, default 1 g/lb ≈ 2.2046 g/kg; shown as g/lb when weight unit is lb), `fat_min_g_per_kg` (default 0.6), `ema_alpha` (default 0.1), `checkin_weekday` (0–6, default 1 = Monday), `hide_calories`, `hide_weight`, `pregnancy_status` (none|pregnant|breastfeeding), `disclaimer_accepted_at`, `evening_reminder` (HH:MM, nullable), `timezone`.
 **[A]** We store birth date, not age, so age stays correct over time.
 
 **goals** (history; the active goal has `end_date IS NULL`)

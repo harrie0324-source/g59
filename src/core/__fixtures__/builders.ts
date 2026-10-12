@@ -1,6 +1,6 @@
 // Test and simulation helpers. Pure TS, deterministic (seeded noise).
 import { addDays } from '../dates';
-import { KCAL_PER_KG } from '../targets';
+import { DEFAULT_PROTEIN_G_PER_KG, KCAL_PER_KG } from '../targets';
 import type { DayLog, Goal, ISODate, Profile, WeightEntry } from '../types';
 
 export const START: ISODate = '2026-01-05'; // a Monday
@@ -13,7 +13,7 @@ export function makeProfile(overrides: Partial<Profile> = {}): Profile {
     activityLevel: 'moderate',
     calorieMode: 'adaptive',
     exerciseCredit: 0.5,
-    proteinGPerKg: 1.8,
+    proteinGPerKg: DEFAULT_PROTEIN_G_PER_KG,
     fatMinGPerKg: 0.6,
     pregnancyStatus: 'none',
     ...overrides,
