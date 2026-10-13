@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -12,6 +13,9 @@ import { Text, space, useColors } from '@/ui';
 import migrations from '../../drizzle/migrations';
 
 SplashScreen.preventAutoHideAsync();
+
+// Remote data only (food search). Local data comes from SQLite live queries.
+const queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: 24 * 60 * 60 * 1000 } } });
 
 export default function RootLayout() {
   // Native: ready immediately. Web previews: wait for the SQLite worker.
@@ -52,23 +56,25 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={navTheme}>
-        <StatusBar style="auto" />
-        <Stack
-          screenOptions={{
-            headerShadowVisible: false,
-            headerTintColor: c.primary,
-            headerTitleStyle: { color: c.text },
-            headerStyle: { backgroundColor: c.background },
-            contentStyle: { backgroundColor: c.background },
-          }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-          <Stack.Screen name="food/quick-add" options={{ presentation: 'modal', title: 'Quick add' }} />
-          <Stack.Screen name="weight/add" options={{ presentation: 'modal', title: 'Log weight' }} />
-          <Stack.Screen name="check-in/[date]" options={{ presentation: 'modal', title: 'Weekly check-in' }} />
-        </Stack>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={navTheme}>
+          <StatusBar style="auto" />
+          <Stack
+            screenOptions={{
+              headerShadowVisible: false,
+              headerTintColor: c.primary,
+              headerTitleStyle: { color: c.text },
+              headerStyle: { backgroundColor: c.background },
+              contentStyle: { backgroundColor: c.background },
+            }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+            <Stack.Screen name="food" options={{ presentation: 'modal', headerShown: false }} />
+            <Stack.Screen name="weight/add" options={{ presentation: 'modal', title: 'Log weight' }} />
+            <Stack.Screen name="check-in/[date]" options={{ presentation: 'modal', title: 'Weekly check-in' }} />
+          </Stack>
+        </ThemeProvider>
+      </QueryClientProvider>
     </SafeAreaProvider>
   );
 }

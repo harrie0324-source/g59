@@ -11,5 +11,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["node_modules", "coverage"]
+  "exclude": ["node_modules", "coverage", "supabase/functions/**/index.ts"]
 }

@@ -2,10 +2,13 @@
 
 Adaptive TDEE fitness app (Expo SDK 57 + TypeScript). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Status: M2 — offline app shell
+## Status: M3 — food logging
 
 - **M1:** `src/core` algorithm (pure TypeScript, fully unit-tested)
 - **M2:** onboarding with safety gates, Today dashboard, quick-add food, weight logging with outlier prompts, "fully logged" days, weekly check-ins, settings (units, hide numbers, erase data). Everything is stored locally in SQLite and works offline.
+- **M3:** food search (USDA via a Supabase Edge Function), barcode scanning (Open Food Facts, then USDA), serving picker with grams, recents and one-tap re-logging, favorites, custom foods, copy yesterday's meal. Logged foods work offline.
+
+**Set up food search:** see [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md). Without it, everything else still works, and search shows a "not set up yet" note.
 
 ## Run it on your phone
 
@@ -41,3 +44,4 @@ Edit `src/db/schema.ts`, then run `npm run db:generate`. It writes a new migrati
 | `src/ui/` | Theme tokens (light/dark) and accessible primitives |
 | `src/stores/` | Zustand (UI state only, never DB copies) |
 | `drizzle/` | Generated SQL migrations |
+| `supabase/functions/` | Edge Functions (Deno). `food-search` proxies USDA |

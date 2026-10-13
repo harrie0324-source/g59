@@ -4,7 +4,7 @@ const expoConfig = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
   expoConfig,
-  { ignores: ['dist/*', 'coverage/*', 'drizzle/*'] },
+  { ignores: ['dist/*', 'coverage/*', 'drizzle/*', 'supabase/functions/**/index.ts'] }, // Edge Functions run on Deno
   // React Native renders text literally, so apostrophes in JSX copy are fine.
   { rules: { 'react/no-unescaped-entities': 'off' } },
   {

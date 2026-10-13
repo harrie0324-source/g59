@@ -237,6 +237,16 @@ Reasons are stored as codes, not sentences, so the wording can change later with
 - **Premium gating isn't applied yet:** everyone gets adaptive targets until RevenueCat lands in M6.
 - **Web is not a target.** The web build is only used for automated screenshots. expo-sqlite 57's synchronous API on web truncates results over 255 bytes (a bug in its `WorkerChannel`), so web needs a local patch to run.
 
+## 8c. M3 implementation notes
+
+- **Logging flow:** Today → Add food → tap "+" on a recent food = **2 taps** (logs the last-used serving, with Undo). Searching and picking a serving = 3–4 taps plus typing.
+- **Foods are copied onto the phone** the moment you open or log them, so logs, recents and favorites work offline, and every food has a local id.
+- **Each food remembers its last serving** (`last_qty`, `last_serving_label`).
+- **Custom foods are entered per serving, as printed on the label.** If no weight is given, the gram option is hidden (`grams_known = false`).
+- **ml are treated as grams** (about 1:1 for most drinks). **[A]**
+- **The USDA and Open Food Facts parsers were built from the documented response shapes.** This environment couldn't reach either API, so do a quick live check on first run.
+- **The Edge Function deploys with `--no-verify-jwt`** because the app works without accounts. It has a per-IP rate limit and input validation. Revisit in M5 (Supabase anonymous sign-in can give every install a token).
+
 ## 9. Assumptions to confirm later (non-blocking)
 
 1. The default display unit is lb/ft-in for the US, switchable anytime.

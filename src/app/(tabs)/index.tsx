@@ -66,7 +66,7 @@ export default function Today() {
 
       <CaloriesCard model={model} hideCalories={p.hideCalories} />
 
-      <Button title="Add food" onPress={() => router.push({ pathname: '/food/quick-add', params: { date } })} />
+      <Button title="Add food" onPress={() => router.push({ pathname: '/food/search', params: { date } })} />
 
       <FoodList logs={logs} date={date} hideCalories={p.hideCalories} />
 

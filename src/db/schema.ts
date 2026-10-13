@@ -87,10 +87,15 @@ export const foods = sqliteTable(
     fat100g: real('fat_100g').notNull(),
     fiber100g: real('fiber_100g'),
     servings: text('servings', { mode: 'json' }).$type<ServingOption[]>().notNull(),
+    /** False for custom foods entered "per serving" without a weight: no gram option then. */
+    gramsKnown: integer('grams_known', { mode: 'boolean' }).notNull().default(true),
+    /** The serving used last time, so logging again is one tap. */
+    lastQty: real('last_qty'),
+    lastServingLabel: text('last_serving_label'),
     isFavorite: integer('is_favorite', { mode: 'boolean' }).notNull().default(false),
     lastUsedAt: integer('last_used_at'),
   },
-  (t) => [index('foods_barcode').on(t.barcode)],
+  (t) => [index('foods_barcode').on(t.barcode), index('foods_source').on(t.source, t.sourceId), index('foods_last_used').on(t.lastUsedAt)],
 );
 
 export type Meal = 'breakfast' | 'lunch' | 'dinner' | 'snack';

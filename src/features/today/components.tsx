@@ -122,7 +122,11 @@ export function FoodList({ logs, date, hideCalories }: { logs: FoodLogRow[]; dat
                 key={l.id}
                 accessibilityRole="button"
                 accessibilityLabel={`${l.name}${hideCalories ? '' : `, ${formatKcal(l.kcal)} calories`}. Edit`}
-                onPress={() => router.push({ pathname: '/food/quick-add', params: { id: l.id, date } })}
+                onPress={() =>
+                  l.foodId
+                    ? router.push({ pathname: '/food/[id]', params: { id: l.foodId, logId: l.id, date } })
+                    : router.push({ pathname: '/food/quick-add', params: { id: l.id, date } })
+                }
                 style={({ pressed }) => ({
                   flexDirection: 'row',
                   justifyContent: 'space-between',
@@ -134,9 +138,14 @@ export function FoodList({ logs, date, hideCalories }: { logs: FoodLogRow[]; dat
                 })}>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text>{l.name}</Text>
-                  {!hideCalories && (l.proteinG || l.carbsG || l.fatG) ? (
-                    <Text variant="caption" tone="secondary">
-                      P {Math.round(l.proteinG)} · C {Math.round(l.carbsG)} · F {Math.round(l.fatG)}
+                  {l.foodId || (!hideCalories && (l.proteinG || l.carbsG || l.fatG)) ? (
+                    <Text variant="caption" tone="secondary" numberOfLines={1}>
+                      {[
+                        l.foodId && l.servingLabel ? (l.servingLabel === 'g' ? `${l.servingsQty} g` : l.servingsQty === 1 ? l.servingLabel : `${l.servingsQty} × ${l.servingLabel}`) : null,
+                        hideCalories ? null : `P ${Math.round(l.proteinG)} · C ${Math.round(l.carbsG)} · F ${Math.round(l.fatG)}`,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
                     </Text>
                   ) : null}
                 </View>
