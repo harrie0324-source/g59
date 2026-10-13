@@ -1,30 +1,43 @@
 # Burnrate
 
-Adaptive TDEE fitness app (Expo + TypeScript). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Adaptive TDEE fitness app (Expo SDK 57 + TypeScript). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Status: M1 — algorithm core
+## Status: M2 — offline app shell
 
-`src/core` is a pure TypeScript module (no React Native imports, enforced by a test):
+- **M1:** `src/core` algorithm (pure TypeScript, fully unit-tested)
+- **M2:** onboarding with safety gates, Today dashboard, quick-add food, weight logging with outlier prompts, "fully logged" days, weekly check-ins, settings (units, hide numbers, erase data). Everything is stored locally in SQLite and works offline.
 
-| File | What it does |
-|------|--------------|
-| `bmr.ts` | Mifflin-St Jeor, activity multipliers, daily-adjust baseline multiplier |
-| `trend.ts` | EMA trend weight, gap interpolation, outlier flags |
-| `tdee.ts` | Rolling-window observed TDEE, data gates, blending, ±150 kcal cap |
-| `targets.ts` | Calorie target, rate limits, macros, exercise credit |
-| `safety.ts` | Age gate, calorie floors, rate limits |
-| `checkin.ts` | Weekly check-in that ties it all together |
-| `describe.ts` | Plain-language, neutral explanations |
-| `insights.ts` | Activity-level suggestion, correlation helper |
-| `activity/*` | MET table, net MET burn, step calories, Health/manual dedupe |
-| `units.ts`, `dates.ts` | kg/lb, cm/ft-in, calendar math |
+## Run it on your phone
 
-## Run
+1. Install **Expo Go** (it must support SDK 57) on your iPhone or Android phone.
+2. On your computer (Node 20+):
+   ```bash
+   npm install
+   npx expo start
+   ```
+3. Scan the QR code: Camera app on iPhone, Expo Go on Android. Phone and computer must be on the same Wi-Fi network (or use `npx expo start --tunnel`).
+
+## Checks
 
 ```bash
-npm install
-npm test              # all unit tests
-npm test -- --coverage
+npm test              # unit + database tests (in-memory SQLite with the real migrations)
 npm run typecheck
-npm run simulate      # 12-week synthetic user; optional args: <trueTdee> <noiseKg>
+npm run lint
+npm run simulate      # 12-week synthetic user through the algorithm
 ```
+
+## Changing the database
+
+Edit `src/db/schema.ts`, then run `npm run db:generate`. It writes a new migration to `drizzle/`, and the app applies it on next launch.
+
+## Layout
+
+| Path | What |
+|------|------|
+| `src/core/` | TDEE algorithm. Pure TS, no React Native imports (lint + test enforced) |
+| `src/db/` | Drizzle schema, repositories, mappers. `client.ts` is the app DB |
+| `src/services/` | Onboarding, check-ins, Today model: logic that uses the DB, tested in Node |
+| `src/app/` | Expo Router screens |
+| `src/ui/` | Theme tokens (light/dark) and accessible primitives |
+| `src/stores/` | Zustand (UI state only, never DB copies) |
+| `drizzle/` | Generated SQL migrations |

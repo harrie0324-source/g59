@@ -3,7 +3,7 @@ import { computeTrend, dailyWeighIns, latestTrend, trendOn } from '../trend';
 import type { WeightEntry } from '../types';
 
 const D0 = '2026-01-05';
-function entries(values: Array<number | null>, start = D0): WeightEntry[] {
+function entries(values: (number | null)[], start = D0): WeightEntry[] {
   const out: WeightEntry[] = [];
   values.forEach((v, i) => {
     if (v === null) return;

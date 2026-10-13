@@ -54,9 +54,11 @@ Key choices, each one line:
 
 ## 2. Folder structure
 
+**[D] (M2)** Expo SDK 57 keeps routes in `src/app/` (its default template), so the tree below lives under `src/`.
+
 ```
 burnrate/
-├─ app/                         # Expo Router (screens only)
+├─ src/app/                     # Expo Router (screens only)
 │  ├─ _layout.tsx               # providers: theme, DB, query client, sync
 │  ├─ (onboarding)/             # units → sex → age → height → weight → activity → goal → result
 │  ├─ (tabs)/
@@ -123,7 +125,7 @@ burnrate/
 `type` (lose|maintain|gain), `rate_kg_per_week` (≥ 0, sign comes from type), `target_weight_kg?`, `start_date`, `end_date`.
 History is kept so the algorithm can skip the 7 days after any goal change.
 
-**weight_entries**
+**weight_entries** — **[D] (M2)** one *manual* entry per day: logging again the same day corrects it. Health imports can add more; the trend uses the earliest of the day.
 `measured_at` (ms), `local_date`, `weight_kg`, `source` (manual|healthkit|health_connect), `external_id?`, `outlier_status` (none|flagged|confirmed).
 **[A]** With several weigh-ins on one day, the trend uses the **earliest** (morning) one.
 
@@ -159,9 +161,9 @@ Rule: a manual row overrides health rows for that day. Otherwise use the health 
 `week_start`, `computed_at`, `goal_id`, `prev_tdee`, `observed_tdee?`, `new_tdee`, `baseline_tdee?` (daily-adjust mode), `confidence` (0–1), `status` (learning|adaptive), `calorie_target`, `protein_g`, `fat_g`, `carbs_g`, `reasons` (JSON reason codes, e.g. `["cap_hit_up","few_weigh_ins"]`), `applied` (bool).
 Reasons are stored as codes, not sentences, so the wording can change later without a migration.
 
-**tdee_estimates** (local-only cache, recomputed; feeds the "TDEE over time" chart)
-`as_of_date`, `tdee`, `observed_tdee?`, `confidence`, `status`, `complete_days`, `weigh_ins`, `algo_version`.
-**[D]** Not synced. It's derived data, and syncing derived data creates pointless conflicts.
+**tdee_estimates** — **[D] (M2) not a table.** It's derived data, recomputed in memory when a chart needs it (fast enough for years of data). Syncing derived data would only create conflicts.
+
+**activity_types** — **[D] (M2) shipped as code** (`src/core/activity/compendium.ts`), not a table, so it's versioned with the algorithm and testable.
 
 **V2 placeholders (not built):** `recipes` + `recipe_items` (a recipe is a food with ingredients), `meal_plans`, `workout_templates`, `coach_grants(owner_id, grantee_id, scopes, expires_at)`, `photo_logs`. Widgets and Apple Watch read from a small shared "today" snapshot the app writes. No schema change needed.
 
@@ -228,6 +230,12 @@ Reasons are stored as codes, not sentences, so the wording can change later with
 | **M4** | Daily activity check-in card + rest day, activity screen, strength logging, evening notification, Trends screen (charts), weekly check-in screen | The full adaptive loop runs on device. A weekly check-in recomputes targets with plain-language reasons. |
 | **M5** | Auth (Apple/Google/email), RLS migrations, sync engine, settings (units, goal change, hide numbers, CSV export, delete account) | Two devices on one account stay in sync. Delete account wipes server + device data. |
 | **M6** | EAS dev build, HealthKit + Health Connect import, RevenueCat paywall/trial/restore, SQLCipher, privacy policy + App Store / Play labels, store assets checklist | Health import with dedupe works on real phones, purchases work in sandbox, and the app is ready for TestFlight / internal testing. |
+
+## 8b. M2 implementation notes
+
+- **Check-in dates:** a check-in on date D uses data through D−1. Onboarding saves the first (formula) check-in on day 0; later ones run on the user's check-in weekday, catching up on app open.
+- **Premium gating isn't applied yet:** everyone gets adaptive targets until RevenueCat lands in M6.
+- **Web is not a target.** The web build is only used for automated screenshots. expo-sqlite 57's synchronous API on web truncates results over 255 bytes (a bug in its `WorkerChannel`), so web needs a local patch to run.
 
 ## 9. Assumptions to confirm later (non-blocking)
 

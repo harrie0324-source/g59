@@ -5,3 +5,7 @@ dist/
 *.log
 .env*
 !.env.example
+expo-env.d.ts
+.expo-shared/
+ios/
+android/
